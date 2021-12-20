@@ -1,3 +1,4 @@
+// Статический сервер для создания прокси на api сервисы ( для того, чтобы обращаться к тому же порту, на котором работает сервер )
 const express = require("express");
 const next = require("next");
 const { createProxyMiddleware } = require("http-proxy-middleware");
