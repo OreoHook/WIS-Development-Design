@@ -1,12 +1,10 @@
-import { FormMethodsTypes } from "./types";
-
 export type FormActionsPayload = {
   _id?: string;
   isOpen?: boolean;
 };
 
 export type FromState = FormActionsPayload & {
-  method?: FormMethodsTypes;
+  method?: "create" | "update";
 };
 
 export type InitialStateType = {

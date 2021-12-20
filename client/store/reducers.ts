@@ -1,7 +1,7 @@
 import type { Reducer } from "react";
 import type { Actions } from "./actions";
 import type { FromState, InitialStateType } from "./state";
-import { FormActionsTypes, FormMethodsTypes } from "./types";
+import { FormActionsTypes } from "./types";
 
 export const formReducer = (state: FromState, action: Actions): FromState => {
   switch (action.type) {
@@ -10,7 +10,7 @@ export const formReducer = (state: FromState, action: Actions): FromState => {
         ...state,
         isOpen: true,
         _id: undefined,
-        method: FormMethodsTypes.Create,
+        method: "create",
       };
 
     case FormActionsTypes.OpenFormUpdate:
@@ -18,7 +18,7 @@ export const formReducer = (state: FromState, action: Actions): FromState => {
         ...state,
         isOpen: true,
         _id: action.payload._id,
-        method: FormMethodsTypes.Update,
+        method: "update",
       };
 
     case FormActionsTypes.CloseForm:

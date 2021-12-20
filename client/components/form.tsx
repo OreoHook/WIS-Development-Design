@@ -4,7 +4,6 @@ import dayjs from "dayjs";
 import {
   FormControl,
   FormLabel,
-  FormErrorMessage,
   Input,
   Select,
   useToast,
@@ -12,27 +11,27 @@ import {
 } from "@chakra-ui/react";
 import { useContext, useCallback } from "react";
 import { AppContext } from "store/context";
-import { FormActionsTypes, FormMethodsTypes } from "store/types";
+import { FormActionsTypes } from "store/types";
 import useSWR, { mutate } from "swr";
 import type { IDepartment, IProfessor } from "lib/types";
 import { useForm } from "react-hook-form";
 import { professorSex } from "lib/data";
 import { mutateCreateProfessor, mutateUpdateProfessor } from "lib/mutate-utils";
+import { readProfessor } from "lib/api";
 
 export const Form: VFC = () => {
   const {
     state: { form },
     dispatch,
   } = useContext(AppContext);
+  // Получение данных по кафедрам
   const { data: departments } = useSWR<IDepartment[]>("/api/departments");
+
+  // Для работы уведомлений ( например, при создании преподователя )
   const toast = useToast();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    watch,
-  } = useForm<IProfessor>({
+
+  // Для удобства работы с формой ( библиотека react-hook-form ( https://react-hook-form.com/ ) )
+  const { register, reset, handleSubmit } = useForm<IProfessor>({
     defaultValues: {
       _id: undefined,
       department: "",
@@ -46,16 +45,15 @@ export const Form: VFC = () => {
     },
   });
 
+  // Автозаполнение данных для формы обновления с сервера
   useEffect(() => {
     const fetchData = () => {
-      fetch(`/api/professors/${form._id}`)
-        .then((r) => r.json())
-        .then((d) =>
-          reset({
-            ...d,
-            dateOfBirth: dayjs(d.dateOfBirth).format("YYYY-MM-DD"),
-          }),
-        );
+      readProfessor({ professorId: form._id }).then((d) =>
+        reset({
+          ...d,
+          dateOfBirth: dayjs(d.dateOfBirth).format("YYYY-MM-DD"),
+        }),
+      );
     };
 
     if (form._id) {
@@ -63,9 +61,12 @@ export const Form: VFC = () => {
     }
   }, [form._id, reset]);
 
+  // Действие по кнопке "Сохранить"
   const onSubmitClickHandler = (formData: IProfessor) => {
+    // Функция для мутирования данных из библиотеки swr
     mutate("/api/professors", async (professors: IProfessor[]) => {
-      if (form.method === FormMethodsTypes.Update) {
+      // Проверка на действие с формой ( если обновить, вызывается мутирование обновления данных, если нет, мутирование создания данных )
+      if (form.method === "update") {
         return mutateUpdateProfessor(professors, {
           professorId: form._id,
           formData,
@@ -74,8 +75,10 @@ export const Form: VFC = () => {
         return mutateCreateProfessor(professors, formData);
       }
     }).then(() => {
+      // Закрытие формы через контекст
       dispatch({ type: FormActionsTypes.CloseForm, payload: {} });
-      if (form.method === FormMethodsTypes.Update) {
+      // Отображение уведомления
+      if (form.method === "update") {
         return toast({
           title: "Данные преподавателя обновлены.",
           status: "success",
@@ -93,6 +96,7 @@ export const Form: VFC = () => {
     });
   };
 
+  // Функция для закрытия формы по кнопке "Закрыть"
   const onCloseClickHandler = useCallback(() => {
     dispatch({ type: FormActionsTypes.CloseForm, payload: {} });
   }, [dispatch]);
@@ -101,11 +105,7 @@ export const Form: VFC = () => {
     <form onSubmit={handleSubmit(onSubmitClickHandler)}>
       {/* Кафедра */}
 
-      <FormControl
-        isInvalid={Boolean(errors?.department)}
-        isRequired
-        id="department"
-      >
+      <FormControl isRequired id="department">
         <FormLabel>Кафедра</FormLabel>
         <Select
           {...register("department", {
@@ -120,19 +120,11 @@ export const Form: VFC = () => {
             </option>
           ))}
         </Select>
-        <FormErrorMessage>
-          {errors.department && errors.department.message}
-        </FormErrorMessage>
       </FormControl>
 
       {/* Должность */}
 
-      <FormControl
-        mt={8}
-        isInvalid={Boolean(errors?.position)}
-        isRequired
-        id="position"
-      >
+      <FormControl mt={8} isRequired id="position">
         <FormLabel>Должность</FormLabel>
         <Input
           {...register("position", {
@@ -141,19 +133,11 @@ export const Form: VFC = () => {
           name="position"
           placeholder="Введите должность преподавателя"
         />
-        <FormErrorMessage>
-          {errors.position && errors.position.message}
-        </FormErrorMessage>
       </FormControl>
 
       {/* Ученая степень */}
 
-      <FormControl
-        mt={8}
-        isInvalid={Boolean(errors?.academicDegree)}
-        isRequired
-        id="academicDegree"
-      >
+      <FormControl mt={8} isRequired id="academicDegree">
         <FormLabel>Ученая степень</FormLabel>
         <Input
           {...register("academicDegree", {
@@ -162,19 +146,11 @@ export const Form: VFC = () => {
           name="academicDegree"
           placeholder="Введите ученую степень преподавателя"
         />
-        <FormErrorMessage>
-          {errors.academicDegree && errors.academicDegree.message}
-        </FormErrorMessage>
       </FormControl>
 
       {/* ФИО */}
 
-      <FormControl
-        mt={8}
-        isInvalid={Boolean(errors?.fullName)}
-        isRequired
-        id="fullName"
-      >
+      <FormControl mt={8} isRequired id="fullName">
         <FormLabel>ФИО</FormLabel>
         <Input
           {...register("fullName", {
@@ -183,14 +159,11 @@ export const Form: VFC = () => {
           name="fullName"
           placeholder="Введите ФИО преподавателя"
         />
-        <FormErrorMessage>
-          {errors.fullName && errors.fullName.message}
-        </FormErrorMessage>
       </FormControl>
 
       {/* Пол */}
 
-      <FormControl mt={8} isInvalid={Boolean(errors?.sex)} isRequired id="sex">
+      <FormControl mt={8} isRequired id="sex">
         <FormLabel>Пол</FormLabel>
         <Select
           {...register("sex", {
@@ -205,17 +178,11 @@ export const Form: VFC = () => {
             </option>
           ))}
         </Select>
-        <FormErrorMessage>{errors.sex && errors.sex.message}</FormErrorMessage>
       </FormControl>
 
       {/* Паспортные данные */}
 
-      <FormControl
-        mt={8}
-        isInvalid={Boolean(errors?.passport)}
-        isRequired
-        id="passport"
-      >
+      <FormControl mt={8} isRequired id="passport">
         <FormLabel>Паспортные данные</FormLabel>
         <Input
           {...register("passport", {
@@ -224,19 +191,11 @@ export const Form: VFC = () => {
           name="passport"
           placeholder="Введите паспортные данные преподавателя"
         />
-        <FormErrorMessage>
-          {errors.passport && errors.passport.message}
-        </FormErrorMessage>
       </FormControl>
 
       {/* Дата рождения */}
 
-      <FormControl
-        mt={8}
-        isInvalid={Boolean(errors?.dateOfBirth)}
-        isRequired
-        id="dateOfBirth"
-      >
+      <FormControl mt={8} isRequired id="dateOfBirth">
         <FormLabel>Дата рождения</FormLabel>
         <Input
           type="date"
@@ -246,9 +205,6 @@ export const Form: VFC = () => {
           name="dateOfBirth"
           placeholder="Введите дату рождения преподавателя"
         />
-        <FormErrorMessage>
-          {errors.dateOfBirth && errors.dateOfBirth.message}
-        </FormErrorMessage>
       </FormControl>
 
       {/* Кнопка сохранения */}

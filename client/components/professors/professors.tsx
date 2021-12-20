@@ -10,6 +10,7 @@ export const Professors: VFC = () => {
 
   return (
     <>
+      {/* Если данные пока не загрузились, показываем скелетную загрузку */}
       {!professors ? (
         <SimpleGrid columns={[1, 1, 2]} spacing={4} mt={4}>
           <ProfessorItemSkeleton />

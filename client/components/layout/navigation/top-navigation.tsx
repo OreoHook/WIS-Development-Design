@@ -1,9 +1,9 @@
-import { FC } from "react";
-import { Box, Flex, Avatar, HStack, useColorModeValue } from "@chakra-ui/react";
+import type { VFC } from "react";
+import { Box, Flex, HStack, useColorModeValue } from "@chakra-ui/react";
 import { AddButton } from "./add-button";
 import { ColorModeSwitcher } from "./color-mode";
 
-export const TopNavigation: FC = () => {
+export const TopNavigation: VFC = () => {
   return (
     <Box
       bg={useColorModeValue("#fcfcfc", "gray.900")}

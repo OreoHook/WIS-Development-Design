@@ -1,38 +1,33 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
-import { ChakraProvider, Box } from "@chakra-ui/react";
+import { ChakraProvider } from "@chakra-ui/react";
 import { SWRConfig } from "swr";
 import { AppProvider } from "../store/context";
 import { fetcher } from "../lib/fetcher";
-import { useRouter } from "next/router";
-import { AnimatePresence } from "framer-motion";
 import AppLayout from "../layouts/app";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
-  const router = useRouter();
-
   return (
-    <ChakraProvider resetCSS={true}>
-      <AppProvider>
-        <SWRConfig
-          value={{
-            refreshInterval: 0,
-            fetcher: fetcher,
-          }}
-        >
-          <AppLayout>
-            <AnimatePresence
-              exitBeforeEnter
-              initial={false}
-              onExitComplete={() => window.scrollTo(0, 0)}
-            >
-              <Box key={router.route}>
-                <Component {...pageProps} />
-              </Box>
-            </AnimatePresence>
-          </AppLayout>
-        </SWRConfig>
-      </AppProvider>
-    </ChakraProvider>
+    <>
+      {/* Для работы ui кита Chakra ui */}
+      <ChakraProvider resetCSS={true}>
+        {/* Для работы с контекстом приложения ( открытие формы создать, обновить, закрытие формы ) */}
+        <AppProvider>
+          {/* Для работы с сетью и перезапроса данных */}
+          <SWRConfig
+            value={{
+              refreshInterval: 0,
+              fetcher: fetcher,
+            }}
+          >
+            {/* Каркас для приложения ( верхний бар с кнопками, модалка ) */}
+            <AppLayout>
+              {/* Сюда вставляется компонент другой страницы, например Home из index файла в текущей папке */}
+              <Component {...pageProps} />
+            </AppLayout>
+          </SWRConfig>
+        </AppProvider>
+      </ChakraProvider>
+    </>
   );
 }

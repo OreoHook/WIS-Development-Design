@@ -13,7 +13,6 @@ export const AppContext = createContext<{
 });
 
 export const AppProvider: FC = ({ children }) => {
-  // pass an mainReducer, initialState
   const [state, dispatch] = useReducer(mainReducer, initialState);
 
   return (

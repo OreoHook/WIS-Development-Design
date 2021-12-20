@@ -1,3 +1,5 @@
+import type { VFC } from "react";
+import { useContext, useCallback } from "react";
 import {
   Box,
   useColorModeValue,
@@ -9,14 +11,12 @@ import {
   Flex,
   useToast,
 } from "@chakra-ui/react";
-import type { VFC } from "react";
-import { useContext, useCallback } from "react";
+import { MdDeleteOutline, MdOutlineCreate } from "react-icons/md";
 import { AppContext } from "store/context";
 import { FormActionsTypes } from "store/types";
-import type { IProfessor } from "lib/types";
-import { MdDeleteOutline, MdOutlineCreate } from "react-icons/md";
 import { mutate } from "swr";
 import { mutateDeleteProfessor } from "lib/mutate-utils";
+import type { IProfessor } from "lib/types";
 
 export const ProfessorItem: VFC<IProfessor> = ({
   department,
@@ -26,20 +26,16 @@ export const ProfessorItem: VFC<IProfessor> = ({
   sex,
   _id,
 }) => {
-  const {
-    state: { form },
-    dispatch,
-  } = useContext(AppContext);
+  const { dispatch } = useContext(AppContext);
   const toast = useToast();
 
   const onUpdateClickHandler = useCallback(() => {
     dispatch({ type: FormActionsTypes.OpenFormUpdate, payload: { _id: _id } });
   }, [_id, dispatch]);
 
-  const onDeleteClickHandler = async (
-  ) => {
-    mutate('/api/professors', async (professors: IProfessor[]) =>
-      mutateDeleteProfessor(professors, { professorId: _id })
+  const onDeleteClickHandler = async () => {
+    mutate("/api/professors", async (professors: IProfessor[]) =>
+      mutateDeleteProfessor(professors, { professorId: _id }),
     ).then(() => {
       return toast({
         title: "Преподаватель успешно удален.",
@@ -68,6 +64,7 @@ export const ProfessorItem: VFC<IProfessor> = ({
       <VStack overflow="hidden" align="start" spacing={1}>
         <VStack spacing={1} align="start" w="100%">
           <Flex justifyContent="space-between" width="100%">
+            {/* Полное имя */}
             <Text
               fontSize="sm"
               noOfLines={1}
@@ -78,6 +75,7 @@ export const ProfessorItem: VFC<IProfessor> = ({
               {fullName}
             </Text>
             <HStack>
+              {/* Кнопка редактирования */}
               <Box
                 mr={2}
                 cursor="pointer"
@@ -86,6 +84,7 @@ export const ProfessorItem: VFC<IProfessor> = ({
               >
                 <Icon as={MdOutlineCreate} boxSize="1.1em" />
               </Box>
+              {/* Кнопка удаления */}
               <Box
                 cursor="pointer"
                 _hover={{ color: "red" }}
@@ -96,26 +95,20 @@ export const ProfessorItem: VFC<IProfessor> = ({
             </HStack>
           </Flex>
           <Flex justifyContent="space-between" width="100%">
-            <Box>
-              <HStack spacing="1">
-                <Tag size="sm" colorScheme="gray">
-                  <Text fontSize={["0.55rem", "inherit", "inherit"]}>
-                    {sex}
-                  </Text>
-                </Tag>
-              </HStack>
-            </Box>
+            {/* Пол преподавателя */}
+            <Tag size="sm" colorScheme="gray">
+              <Text fontSize={["0.55rem", "inherit", "inherit"]}>{sex}</Text>
+            </Tag>
           </Flex>
         </VStack>
-        <Box>
-          <Text color="gray.500" fontSize="sm" noOfLines={2} textAlign="left">
-            {department}
-            {", "}
-            {academicDegree}
-            {", "}
-            {position}
-          </Text>
-        </Box>
+        {/* Кафедра, ученая степень, должность */}
+        <Text color="gray.500" fontSize="sm" noOfLines={2} textAlign="left">
+          {department}
+          {", "}
+          {academicDegree}
+          {", "}
+          {position}
+        </Text>
       </VStack>
     </Box>
   );

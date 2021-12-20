@@ -6,6 +6,7 @@ import { Modal } from "components/layout/modal";
 export default function AppLayout({ children }: PropsWithChildren<{}>) {
   return (
     <>
+      {/* Верхняя панель с кнопкой добавить и переключенем цветового режима */}
       <TopNavigation />
       <Box
         textAlign="center"
@@ -18,6 +19,8 @@ export default function AppLayout({ children }: PropsWithChildren<{}>) {
           {children}
         </Box>
       </Box>
+
+      {/* Модалка с формой */}
       <Modal />
     </>
   );

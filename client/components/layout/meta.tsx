@@ -1,7 +1,7 @@
 import Head from "next/head";
 
 interface MetaProps {
-  title: string;
+  title?: string;
   description?: string;
   keywords?: string;
   image?: string;
@@ -13,9 +13,9 @@ export default function Meta({
   description,
   image,
 }: MetaProps) {
-  title = title.includes("Система")
+  title = title?.includes("Система")
     ? title
-    : title.concat(" | Система учета преподавателей");
+    : title?.concat(" | Система учета преподавателей");
   return (
     <Head>
       <meta charSet="utf-8" />
@@ -29,19 +29,12 @@ export default function Meta({
       <meta property="og:title" content={title} />
       <meta property="og:image" content={image ? image : "/icon.jpg"} />
       <title>{title}</title>
-      <meta name="mobile-web-app-capable" content="yes" />
-      <meta name="theme-color" content="#030303" />
-      <meta name="apple-mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-      <meta name="apple-mobile-web-app-title" content={title} />
-      <meta name="application-name" content={title} />
     </Head>
   );
 }
 
 Meta.defaultProps = {
   title: "Главная | Система учета преподавателей",
-  keywords:
-    "development, programming, design, frontend, backend, computer science, management",
+  keywords: "management",
   description: "Система учета преподавателей",
 };

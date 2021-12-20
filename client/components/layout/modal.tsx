@@ -1,3 +1,5 @@
+import type { VFC } from "react";
+import { useContext, useCallback } from "react";
 import {
   Modal as ModalBase,
   ModalOverlay,
@@ -7,8 +9,6 @@ import {
   ModalBody,
   ModalCloseButton,
 } from "@chakra-ui/react";
-import type { VFC } from "react";
-import { useContext, useCallback } from "react";
 import { Form } from "../form";
 import { AppContext } from "store/context";
 import { FormActionsTypes } from "store/types";
@@ -39,6 +39,7 @@ export const Modal: VFC = () => {
           <Form />
         </ModalBody>
 
+        {/* Только для увеличения пространства снизу модалки */}
         <ModalFooter />
       </ModalContent>
     </ModalBase>

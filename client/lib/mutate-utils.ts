@@ -1,6 +1,8 @@
 import type { IProfessor } from "./types";
 import { createProfessor, deleteProfessor, updateProfessor } from "./api";
 
+// Готовые функции для мутирования данных и возвращения данных
+
 export const mutateCreateProfessor = async (
   prevProfessors: IProfessor[],
   formData: IProfessor,

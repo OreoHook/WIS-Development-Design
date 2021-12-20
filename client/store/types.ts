@@ -3,8 +3,3 @@ export enum FormActionsTypes {
   OpenFormUpdate = "OPEN_FORM_UPDATE",
   CloseForm = "CLOSE_FORM",
 }
-
-export enum FormMethodsTypes {
-  Create = "CREATE",
-  Update = "UPDATE",
-}
